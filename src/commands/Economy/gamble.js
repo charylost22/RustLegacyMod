@@ -8,7 +8,7 @@ const BASE_WIN_CHANCE = 0.4;
 const CLOVER_WIN_BONUS = 0.1;
 const CHARM_WIN_BONUS = 0.08;
 const PAYOUT_MULTIPLIER = 2.0;
-const GAMBLE_COOLDOWN = 5 * 60 * 1000;
+const GAMBLE_COOLDOWN = 20 * 1000;
 
 export default {
     data: new SlashCommandBuilder()
@@ -25,7 +25,7 @@ export default {
     execute: withErrorHandling(async (interaction, config, client) => {
         const deferred = await InteractionHelper.safeDefer(interaction);
         if (!deferred) return;
-            
+
             const userId = interaction.user.id;
             const guildId = interaction.guildId;
             const betAmount = interaction.options.getInteger("amount");
@@ -69,7 +69,7 @@ export default {
                 cloverMessage = `\n🍀 **Lucky Clover Consumed:** Your win chance was boosted!`;
                 usedClover = true;
             }
-            
+
             else if (charmCount > 0) {
                 winChance += CHARM_WIN_BONUS;
                 userData.inventory["lucky_charm"] -= 1;
@@ -91,7 +91,7 @@ export default {
                     `You successfully gambled and turned your **$${betAmount.toLocaleString()}** bet into **$${amountWon.toLocaleString()}**!${cloverMessage}`,
                 );
             } else {
-cashChange = -betAmount;
+                cashChange = -betAmount;
 
                 resultEmbed = warningEmbed(
                     "💔 You Lost...",
@@ -100,7 +100,7 @@ cashChange = -betAmount;
             }
 
             userData.wallet = (userData.wallet || 0) + cashChange;
-userData.lastGamble = now;
+            userData.lastGamble = now;
 
             await setEconomyData(client, guildId, userId, userData);
 
@@ -122,7 +122,7 @@ userData.lastGamble = now;
                 });
             } else {
                 resultEmbed.setFooter({
-                    text: `Next gamble available in 5 minutes. Base win chance: ${Math.round(BASE_WIN_CHANCE * 100)}%.`,
+                    text: `Next gamble available in 20 seconds. Base win chance: ${Math.round(BASE_WIN_CHANCE * 100)}%.`,
                 });
             }
 
